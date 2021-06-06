@@ -39,16 +39,6 @@
         app:layout_constraintTop_toTopOf="@+id/guideline4"
         app:layout_constraintVertical_bias="0.891" />
 
-    <ImageView
-        android:id="@+id/ivImage"
-        android:layout_width="86dp"
-        android:layout_height="109dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
-        app:layout_constraintEnd_toStartOf="@+id/guideline5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/breakingbad" />
-
     <TextView
         android:id="@+id/tvComentari"
         android:layout_width="262dp"
@@ -70,4 +60,13 @@
         android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="@+id/guideline5"
         app:layout_constraintTop_toTopOf="@+id/guideline4" />
+
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="87dp"
+        android:layout_height="116dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
