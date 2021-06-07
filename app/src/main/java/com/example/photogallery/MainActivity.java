@@ -18,10 +18,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
+
 import android.widget.Button;
-import android.widget.Toast;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,12 +31,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+
 
  public class MainActivity extends AppCompatActivity {
 
-     private Button btnCamera;
-     private static String PhotoDir;
+
+     String currentPhotoPath;
+     private File photoAsFile;
      private RecyclerView recyclerView;
      private static List<Photo> photosList = null;
      private int[] photos = {R.drawable.ic_launcher_background};
@@ -55,15 +55,14 @@ import java.util.Locale;
         setContentView(R.layout.activity_main);
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
+        boolean photosFirstTry = sharedPreferences.getBoolean("photosFirstTry", true);
 
-
-        boolean firstStart = sharedPreferences.getBoolean("firstStart", true);
-        if (firstStart){
+        if (photosFirstTry){
             UserPhotosSaved(this);
         }
 
-        btnCamera = findViewById(R.id.btnCamera);
-        btnCamera.setOnClickListener(v -> {
+        Button photoBtn = findViewById(R.id.btnCamera);
+        photoBtn.setOnClickListener(v -> {
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
                 openCamera();
             else
@@ -78,37 +77,32 @@ import java.util.Locale;
         recyclerView.setAdapter(vAdapter);
 
     }
-     private File photoAsFile;
 
      private void openCamera() {
-         Log.d("hola", "hola");
          Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-                 photoAsFile = createTakenPhoto();
-
+             photoAsFile = createTakenPhoto();
              if (photoAsFile != null) {
                  Uri photoUri = FileProvider.getUriForFile(this, "com.example.photogallery", photoAsFile);
                  cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                  startActivityForResult(cameraIntent, REQUEST_PHOTO_CAPTURE);
              }
              startActivity(getIntent());
-         }
      }
 
      private File createTakenPhoto() {
-        String currentPhotoPath;
+
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String photoName = "JPG_ " + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-         File photo = null;
          try {
-             photo = File.createTempFile(photoName, ".jpg", storageDir);
+             File photo = File.createTempFile(photoName, ".jpg", storageDir);
              currentPhotoPath = photo.getAbsolutePath();
+             return photo;
          } catch (IOException e) {
              e.printStackTrace();
          }
 
-         return photo;
+         return null;
      }
 
      public static List<Photo> examplePhotos(Context context) {
@@ -188,7 +182,7 @@ import java.util.Locale;
 
          SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
          SharedPreferences.Editor editor = sharedPreferences.edit();
-         editor.putBoolean("firstStart", false);
+         editor.putBoolean("photosFirstTry", false);
          editor.apply();
      }
 

@@ -36,7 +36,7 @@ public class PhotoComments {
     private static Document getCommentsXML(Context context) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        FileInputStream fis = new FileInputStream(new File(context.getFilesDir(), "photos" + File.separator + "PhotoComments.xml"));//context.getFilesDir(), "photos" + File.separator + "PhotoComments.xml"
+        FileInputStream fis = new FileInputStream(new File(context.getFilesDir(), "photos" + File.separator + "PhotoComments.xml"));
         return builder.parse(fis);
     }
 
@@ -64,30 +64,6 @@ public class PhotoComments {
         }
 
 
-    }
-
-    public static String getComments(Context context, String photoName) {
-        String text = null;
-        Document comments = null;
-
-        try {
-            comments = getCommentsXML(context);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (comments != null) {
-            XPathFactory xPathFactory = XPathFactory.newInstance();
-            XPath xpath = xPathFactory.newXPath();
-            XPathExpression xPathExpr = null;
-            try {
-                xPathExpr = xpath.compile(photoName);
-                text = (String) xPathExpr.evaluate(comments, XPathConstants.STRING);
-            } catch (XPathExpressionException e) {
-                e.printStackTrace();
-            }
-        }
-        return text;
     }
 
     public static void commentsToXML(Context context, String name, String photoComment) {
