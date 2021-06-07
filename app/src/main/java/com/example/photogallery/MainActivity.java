@@ -121,7 +121,7 @@ import java.util.Locale;
              for (File files : listImages) {
                  if (files.getName().endsWith(".jpg") || files.getName().endsWith(".png")) {
                      bitmap = BitmapFactory.decodeFile(files.getPath(), bitmapOptions);
-                     Photo photo = new Photo(files.getName(), bitmap, PhotoComments.commentFinder(context, files.getName()));
+                     Photo photo = new Photo(files.getName(), bitmap, PhotoComments.getComments(context, files.getName()));
                      imagesList.add(photo);
                  }
              }
@@ -131,7 +131,7 @@ import java.util.Locale;
              if (photos != null) {
                  for (File file : photos) {
                      bitmap = BitmapFactory.decodeFile(file.getPath(), bitmapOptions);
-                     Photo it = new Photo(file.getName(), bitmap, PhotoComments.commentFinder(context, file.getName()));
+                     Photo it = new Photo(file.getName(), bitmap, PhotoComments.getComments(context, file.getName()));
                      imagesList.add(it);
                  }
              }

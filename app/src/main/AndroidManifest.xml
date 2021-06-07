@@ -15,7 +15,8 @@
         <meta-data
             android:name="com.google.android.actions"/>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
