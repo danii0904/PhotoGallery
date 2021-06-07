@@ -13,16 +13,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PhotoGallery">
         <meta-data
-            android:name="com.google.android.actions"/>
+            android:name="com.google.android.actions"
+            android:resource="@xml/paths" />
 
-        <activity android:name=".MainActivity"
-            android:targetActivity=".MainActivity">
+        <activity android:name="com.example.photogallery.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.photogallery"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/paths" />
+        </provider>
     </application>
 
 </manifest>

@@ -37,10 +37,10 @@ import java.util.Locale;
  public class MainActivity extends AppCompatActivity {
 
      private Button btnCamera;
-     private File photoAsFile;
      private static String PhotoDir;
      private RecyclerView recyclerView;
      private static List<Photo> photosList = null;
+     private int[] photos = {R.drawable.ic_launcher_background};
 
      private static final int REQUEST_PHOTO_CAPTURE = 101;
      private static final int REQUEST_TAKE_PHOTO = 100;
@@ -58,70 +58,74 @@ import java.util.Locale;
 
 
         boolean firstStart = sharedPreferences.getBoolean("firstStart", true);
-        if (!firstStart){
+        if (firstStart){
             UserPhotosSaved(this);
         }
 
         btnCamera = findViewById(R.id.btnCamera);
-
         btnCamera.setOnClickListener(v -> {
-            Log.d("holis", "holis");
-            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                try {
-                    openCamera();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                openCamera();
             else
                 ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.CAMERA}, REQUEST_TAKE_PHOTO);
         });
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         photosList = examplePhotos(this.getBaseContext());
+        viewAdapter vAdapter = new viewAdapter(photosList);
+        recyclerView.setAdapter(vAdapter);
 
     }
+     private File photoAsFile;
 
-     private void openCamera() throws IOException {
-         Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-         if (takePhotoIntent.resolveActivity(getPackageManager()) != null) {
-             photoAsFile = createTakenPhoto();
+     private void openCamera() {
+         Log.d("hola", "hola");
+         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+         if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                 photoAsFile = createTakenPhoto();
+
              if (photoAsFile != null) {
                  Uri photoUri = FileProvider.getUriForFile(this, "com.example.photogallery", photoAsFile);
-                 takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                 startActivityForResult(takePhotoIntent, REQUEST_PHOTO_CAPTURE);
+                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                 startActivityForResult(cameraIntent, REQUEST_PHOTO_CAPTURE);
              }
              startActivity(getIntent());
          }
      }
 
-     private File createTakenPhoto() throws IOException {
+     private File createTakenPhoto() {
         String currentPhotoPath;
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String photoName = "JPG_ " + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File photo = File.createTempFile(photoName, ".jpg", storageDir);
-        currentPhotoPath = photo.getAbsolutePath();
+         File photo = null;
+         try {
+             photo = File.createTempFile(photoName, ".jpg", storageDir);
+             currentPhotoPath = photo.getAbsolutePath();
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
 
          return photo;
      }
 
      public static List<Photo> examplePhotos(Context context) {
-         List<Photo> imagesList = new ArrayList<Photo>();
+         List<Photo> imagesList = new ArrayList<>();
 
          BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
          bitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565;
 
-         String photosDirectory;
+         String dirPhotos;
          Bitmap bitmap;
          try {
-             photosDirectory = context.getFilesDir() + File.separator + "Photos";
-             File[] listImages = new File(photosDirectory).listFiles();
+             dirPhotos = context.getFilesDir() + File.separator + "photos";
+             File[] listImages = new File(dirPhotos).listFiles();
              for (File files : listImages) {
-                 if (files.getName().endsWith(".jpg") || files.getName().endsWith(".png")) {
+                 if (files.getName().endsWith(".jpg")) {
                      bitmap = BitmapFactory.decodeFile(files.getPath(), bitmapOptions);
-                     Photo photo = new Photo(files.getName(), bitmap, PhotoComments.getComments(context, files.getName()));
+                     Photo photo = new Photo(files.getName(), bitmap, PhotoComments.commentsOnXML(context, files.getName()));
                      imagesList.add(photo);
                  }
              }
@@ -131,7 +135,7 @@ import java.util.Locale;
              if (photos != null) {
                  for (File file : photos) {
                      bitmap = BitmapFactory.decodeFile(file.getPath(), bitmapOptions);
-                     Photo it = new Photo(file.getName(), bitmap, PhotoComments.getComments(context, file.getName()));
+                     Photo it = new Photo(file.getName(), bitmap, PhotoComments.commentsOnXML(context, file.getName()));
                      imagesList.add(it);
                  }
              }
